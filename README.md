@@ -1,4 +1,4 @@
-# Maven Demo
+# Week 11 Jenkins webhook test
 
 A simple Java project created to understand the basics of **Apache Maven** and its integration with **Jenkins**.
 
