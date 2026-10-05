@@ -34,7 +34,6 @@ pipeline {
                     sh '''
                         export PATH=/opt/homebrew/bin:$PATH
                         mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=week12-app
-                          
                     '''
                 }
             }
@@ -57,7 +56,10 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE:latest .'
+                sh '''
+                    export PATH=/opt/homebrew/bin:$PATH
+                    docker build -t $IMAGE:latest .
+                '''
             }
         }
 
@@ -71,6 +73,8 @@ pipeline {
                     )
                 ]) {
                     sh '''
+                        export PATH=/opt/homebrew/bin:$PATH
+
                         echo "$DOCKER_PASS" | docker login \
                             -u "$DOCKER_USER" \
                             --password-stdin
@@ -84,7 +88,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
+                    export PATH=/opt/homebrew/bin:$PATH
+
                     docker rm -f week12-container || true
+
                     docker run -d \
                         --name week12-container \
                         -p 5000:5000 \
@@ -104,7 +111,7 @@ pipeline {
         }
 
         failure {
-            echo 'Something failed — check the stage logs.'
+            echo 'Something failed - check the stage logs.'
         }
     }
 }
