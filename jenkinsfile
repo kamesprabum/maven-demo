@@ -7,6 +7,7 @@ pipeline {
 
     environment {
         IMAGE = "kamesprabu/week12-app"
+        PATH = "/Applications/Docker.app/Contents/Resources/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
 
     stages {
@@ -21,10 +22,7 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
-                sh '''
-                    export PATH=/opt/homebrew/bin:$PATH
-                    mvn clean package
-                '''
+                sh 'mvn clean package'
             }
         }
 
@@ -32,8 +30,8 @@ pipeline {
             steps {
                 withSonarQubeEnv('sonar') {
                     sh '''
-                        export PATH=/opt/homebrew/bin:$PATH
-                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=week12-app
+                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                          -Dsonar.projectKey=week12-app
                     '''
                 }
             }
@@ -57,7 +55,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 sh '''
-                    export PATH=/opt/homebrew/bin:$PATH
+                    docker --version
                     docker build -t $IMAGE:latest .
                 '''
             }
@@ -73,8 +71,6 @@ pipeline {
                     )
                 ]) {
                     sh '''
-                        export PATH=/opt/homebrew/bin:$PATH
-
                         echo "$DOCKER_PASS" | docker login \
                             -u "$DOCKER_USER" \
                             --password-stdin
@@ -88,8 +84,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    export PATH=/opt/homebrew/bin:$PATH
-
                     docker rm -f week12-container || true
 
                     docker run -d \
