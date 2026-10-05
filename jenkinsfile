@@ -33,7 +33,7 @@ pipeline {
                 withSonarQubeEnv('sonar') {
                     sh '''
                         export PATH=/opt/homebrew/bin:$PATH
-                        mvn sonar:sonar \
+                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=week12-app
                           -Dsonar.projectKey=week12-app
                     '''
                 }
